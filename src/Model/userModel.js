@@ -2,10 +2,10 @@ const Model = require("../Config/dbConnection");
 
 class User extends Model {
   static get tableName() {
-    return "mytest";
+    return "users";
   }
   static get idColumn() {
-    return "id";
+    return "user_id";
   }
 }
 

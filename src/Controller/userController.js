@@ -19,9 +19,7 @@ const adduser = async (req, res) => {
       });
       if (insertUser) {
         res.status(200).send({
-          success: true,
-          res: insertUser,
-          message: "Insert Successfully",
+          user_id: insertUser.user_id, name: insertUser.name, email: insertUser.email
         });
       } else {
         res.status(500).send({
@@ -71,10 +69,10 @@ const loginUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const user = await User.query();
-    if(user){
-      res.send (user)
+    if(user) {
+      res.send(user)
     }
-    else{
+    else {
       res.send("Something wrong")
     }
   } catch (error) {
