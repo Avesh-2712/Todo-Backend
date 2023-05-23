@@ -29,9 +29,7 @@ const adduser = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({
-      success: false,
-      error: error.message,
-      stack: error.stack
+      error: error.message
     });
   }
 };
@@ -43,25 +41,23 @@ const loginUser = async (req, res) => {
     if (!user) {
       res.send({
         message: "Email is invalid!! please enter Valid email!",
-      })
+      });
     } else {
       const isMatch = bcrypt.compareSync(password, user.password);
       if (!isMatch) {
         res.send({
-          message: "Password is incorrect!!",
+          message: "Password is incorrect!!"
         });
       } else {
         const token = jwt.sign({id: user.id}, process.env.JWT_SECRET)
         res.status(200).send({
           user, token
-        })
+        });
       }      
     }
   } catch (error) {
     res.status(500).send({
-      success: false,
-        error: error.message,
-        stack: error.stack
+        error: error.message
     })
   }
 }
@@ -77,9 +73,7 @@ const getUser = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({
-      success: false,
-      error: error.message,
-      stack: error.stack
+      error: error.message
     });
   }
 };
