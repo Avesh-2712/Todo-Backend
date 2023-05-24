@@ -39,6 +39,7 @@ const getOrders = async (req, res) => {
   const getOrder = await Order.query()
     .innerJoin("users", "users.user_id", "orders.user_id")
     .innerJoin("products", "products.user_id", "users.user_id")
+    .innerJoin('address', 'address.user_id', 'products.user_id')
     .select(
       "users.user_id",
       "users.name",
@@ -50,7 +51,13 @@ const getOrders = async (req, res) => {
       "orders.quantity",
       "orders.total_amount",
       "orders.status",
-      "orders.order_date"
+      "orders.order_date",
+      'address.address_line1',
+      'address.address_line2',
+      'address.pincode',
+      'address.city',
+      'address.state',
+      'address.country'
     );
   if (getOrder) {
     res.send(getOrder);
