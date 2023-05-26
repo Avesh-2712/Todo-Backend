@@ -35,8 +35,45 @@ const addOrder = async (req, res) => {
   }
 };
 
+const getOrderById = async (req, res) => {
+  const { id } = req.params;
+  const order = await Order.query().where('orders.id', id).orWhere('orders.user_id', id).orWhere('orders.product_id', id)
+  .innerJoin("users", "users.user_id", "orders.user_id")
+  .innerJoin('products', 'products.user_id', 'users.user_id')
+  .innerJoin('address', 'address.user_id', 'products.user_id')
+  .select(
+    "users.user_id",
+    "users.name",
+    "users.email",
+    "products.id",
+    "products.productName",
+    "products.productDetails",
+    "orders.id",
+    "orders.quantity",
+    "orders.total_amount",
+    "orders.status",
+    "orders.order_date",
+    'address.address_line1',
+    'address.address_line2',
+    'address.pincode',
+    'address.city',
+    'address.state',
+    'address.country'
+  ).first();
+  if (!order) {
+    res.status(401).send({
+      message: 'OrderId is invalid'
+    });
+  } else {
+    res.status(200).send({
+      order
+    });
+  };
+};
+
 const getOrders = async (req, res) => {
-  const getOrder = await Order.query()
+  try {
+    const getOrder = await Order.query()
     .innerJoin("users", "users.user_id", "orders.user_id")
     .innerJoin("products", "products.user_id", "users.user_id")
     .innerJoin('address', 'address.user_id', 'products.user_id')
@@ -60,13 +97,23 @@ const getOrders = async (req, res) => {
       'address.country'
     );
   if (getOrder) {
-    res.send(getOrder);
+    res.status(200).send({
+      getOrder
+    });
   } else {
-    res.send("Something went wrong");
+    res.status(401).send({
+      message: "Something went wrong"
+    });
+  }
+  } catch (error) {
+    res.status(500).send({
+      error: error.message,
+    });
   }
 };
 
 module.exports = {
   addOrder,
   getOrders,
+  getOrderById
 };
