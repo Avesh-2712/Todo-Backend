@@ -7,31 +7,55 @@ const addProduct = async (req, res) => {
     const userId = await User.query().where("user_id", user_id).first();
     if (!userId) {
       res.status(403).send({
-        message: "Invalid userId",
+        message: "Invalid userId"
       });
     } else {
       const product = await Product.query().insert({
         productName: productName,
         productDetails: productDetails,
-        user_id: user_id,
+        user_id: user_id
       });
       if (product) {
         res.status(200).send({
           product,
-          message: "Insert Successfully",
+          message: "Insert Successfully"
         });
       } else {
         res.status(401).send({
-          message: "Something went wrong",
+          message: "Something went wrong"
         });
       }
     }
   } catch (error) {
     res.status(500).send({
-      error: error.message,
+      error: error.message
     });
   }
 };
+
+const getProductById = async(req, res) => {
+  const { id } = req.params;
+  const product = await Product.query().where('products.id', id).orWhere('products.user_id', id)
+  .innerJoin('users', 'users.user_id', 'products.user_id')
+  .select(
+  'users.user_id',
+  'users.name',
+  'users.email',
+  'products.user_id',
+  'products.productName',
+  'products.productDetails',
+  'products.id'
+  ).first();
+  if (!product) {
+    res.status(401).send({
+      message: 'Invalid Id'
+    })
+  } else {
+    res.status(200).send({
+      product
+    });
+  };
+};  
 
 const getUserAndProduct = async (req, res) => {
   try {
@@ -44,11 +68,11 @@ const getUserAndProduct = async (req, res) => {
       'products.user_id',
       'products.productName',
       'products.productDetails',
-      'products.id',
+      'products.id'
     );
     if (UserAndProduct) {
       res.status(200).send({
-        UserAndProduct,
+        UserAndProduct
       });
     } else {
       res.status(200).send({
@@ -57,12 +81,13 @@ const getUserAndProduct = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({
-      error: error.message,
+      error: error.message
     });
   }
 };
 
 module.exports = {
   addProduct,
-  getUserAndProduct,
+  getProductById,
+  getUserAndProduct
 };
