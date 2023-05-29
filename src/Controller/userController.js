@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const adduser = async (req, res) => {
   try {
     const { name, email } = req.body;
-    const hashpassword = await bcrypt.hashSync(req.body.password, 10)
+    const hashpassword = bcrypt.hashSync(req.body.password, 10)
     const user = await User.query().where({'email': email}).first();
     if (user) {
       res.status(401).send({
@@ -49,7 +49,7 @@ const loginUser = async (req, res) => {
           message: "Password is incorrect!!"
         });
       } else {
-        const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: '1 minutes'})
+        const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: '1 hours'})
         res.status(200).send({
           user, token
         });
@@ -64,12 +64,16 @@ const loginUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    const user = await User.query();
+    const user = await User.query().select('users.user_id', 'users.name', 'users.email');
     if(user) {
-      res.send(user)
+      res.status(200).send({
+        user
+      });
     }
     else {
-      res.send("Something wrong")
+      res.status(403).send({
+        message: "Something wrong"
+      })
     }
   } catch (error) {
     res.status(500).send({
